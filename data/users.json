@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": "f9fbf1ad4d6433a9ceefd2a8d801d1e3",
+      "username": "admin",
+      "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "name": "Administrator",
+      "email": "admin@example.com",
+      "role": "admin",
+      "createdAt": "2025-04-19T23:45:08.516Z"
+    },
+    {
+      "id": "2ee21e222ee1172a36bec078b1de8f2d",
+      "username": "munil",
+      "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "name": "munil",
+      "email": "munil@gmail.com",
+      "role": "employee",
+      "createdAt": "2025-04-19T23:55:47.960Z"
+    }
+  ]
+}

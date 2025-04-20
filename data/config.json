@@ -1,0 +1,33 @@
+{
+  "wordpress": {
+    "apiUrl": "",
+    "username": "",
+    "password": ""
+  },
+  "openai": {
+    "apiKey": "",
+    "model": "gpt-3.5-turbo",
+    "temperature": 0.7,
+    "maxTokens": 3500
+  },
+  "app": {
+    "excelFile": "keywords.xlsx",
+    "keywordColumn": "Keyword",
+    "minWords": 800,
+    "publishStatus": "draft",
+    "delayBetweenPosts": 5000,
+    "contentTemplate": "Write a comprehensive, engaging, and SEO-optimized article about \"{keyword}\" that follows these guidelines:\n\n1. The article should be at least {minWords} words\n2. Use proper WordPress formatting with H2 and H3 headings (no H1 as that's for the title)\n3. Include a compelling introduction that hooks the reader\n4. Break down the topic into logical sections with descriptive headings\n5. Include practical tips, examples, and actionable advice\n6. Add a conclusion that summarizes key points\n7. Optimize for SEO with natural keyword usage\n8. Make the content valuable and informative for the reader"
+  },
+  "prompts": {
+    "useMultiPartGeneration": false,
+    "mainPrompt": "",
+    "part1Prompt": "Write an engaging introduction for an article about \"{keyword}\". The introduction should hook the reader, explain why the topic is important, and preview what the article will cover. Use approximately {minWords} words.",
+    "part2Prompt": "Write the main body content for an article about \"{keyword}\". This should include detailed information, breakdown of the topic into logical sections with appropriate H2 and H3 headings, practical tips, examples, and actionable advice. Use approximately {minWords} words.",
+    "part3Prompt": "Write a conclusion for an article about \"{keyword}\". The conclusion should summarize the key points, provide final thoughts, and possibly include a call to action. Use approximately {minWords} words.",
+    "toneVoice": "",
+    "seoGuidelines": "",
+    "thingsToAvoid": "",
+    "articleFormat": "",
+    "useArticleFormat": false
+  }
+}
