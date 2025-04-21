@@ -67,7 +67,7 @@ async function writeFile(filePath, content) {
 
 // Create the Express application
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 // Configure middleware
 app.use(express.static(path.join(__dirname, 'public')));
@@ -708,7 +708,7 @@ async function startServer() {
     await initializeApp();
     
     // Use PORT from environment variable (Cloudways sets this)
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 4000;
     
     // Listen on all available network interfaces (0.0.0.0)
     app.listen(port, '0.0.0.0', () => {
