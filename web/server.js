@@ -706,11 +706,13 @@ async function startServer() {
     
     // Continue with existing initialization
     await initializeApp();
+    
     // Use PORT from environment variable (Cloudways sets this)
     const port = process.env.PORT || 8080;
+    
     // Listen on all available network interfaces (0.0.0.0)
     app.listen(port, '0.0.0.0', () => {
-      console.log(`WordPress Automation web app running on port ${port}`);
+      console.log(`WordPress Automation web app running at http://localhost:${port}`);
       console.log(`Default admin credentials: username: admin, password: admin123`);
       console.log(`Please login and change the default password immediately!`);
     });
@@ -718,6 +720,7 @@ async function startServer() {
     console.error('ERROR STARTING SERVER:', error);
   }
 }
+startServer();
 
 // Attach user to locals
 app.use(attachUserToLocals);
