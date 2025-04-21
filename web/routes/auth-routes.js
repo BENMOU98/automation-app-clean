@@ -225,3 +225,131 @@ router.post('/profile', isAuthenticated, async (req, res) => {
 });
 
 module.exports = router;
+
+// Add this route to your auth-routes.js file
+
+// Admin employee dashboard route for monitoring employee activities
+router.get('/admin/employee-dashboard', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    // Get all employees
+    const allUsers = await userModel.getAllUsers();
+    const employees = allUsers.filter(user => user.role === 'employee');
+    
+    // Optional: Get selected employee ID from query params
+    const selectedEmployeeId = req.query.employeeId || '';
+    let selectedEmployee = null;
+    let keywords = [];
+    let publications = [];
+    let activityLog = [];
+    let stats = {
+      totalKeywords: 0,
+      publishedKeywords: 0,
+      pendingKeywords: 0,
+      todayActivity: 0
+    };
+    
+    // If an employee is selected, get their data
+    if (selectedEmployeeId) {
+      // Find selected employee
+      selectedEmployee = employees.find(emp => emp.id === selectedEmployeeId);
+      
+      if (selectedEmployee) {
+        // Get employee's keywords
+        const excelFileExists = await fileExists(config.app.excelFile);
+        
+        if (excelFileExists) {
+          const workbook = XLSX.readFile(config.app.excelFile);
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const data = XLSX.utils.sheet_to_json(worksheet);
+          
+          // Filter data for the selected employee
+          keywords = data.filter(row => 
+            row.OwnerId === selectedEmployeeId || row.CreatedBy === selectedEmployeeId
+          );
+          
+          // Filter for published articles
+          publications = keywords.filter(row => row.Status === 'Published');
+          
+          // Calculate statistics
+          stats.totalKeywords = keywords.length;
+          stats.publishedKeywords = publications.length;
+          stats.pendingKeywords = keywords.filter(row => 
+            row.Status === 'Pending' || !row.Status || row.Status === ''
+          ).length;
+          
+          // Create dummy activity log for now
+          activityLog = createDummyActivityLog(keywords, publications, selectedEmployeeId);
+          
+          // Count today's activity
+          const today = new Date().toISOString().split('T')[0];
+          stats.todayActivity = activityLog.filter(log => 
+            log.timestamp.startsWith(today)
+          ).length;
+        }
+      }
+    }
+    
+    // Render the employee dashboard view
+    res.render('employee-dashboard', {
+      page: 'employee-dashboard',
+      employees,
+      selectedEmployeeId,
+      selectedEmployee,
+      keywords,
+      publications,
+      activityLog,
+      stats,
+      keywordColumn: config.app.keywordColumn,
+      error: req.flash ? req.flash('error') : null,
+      success: req.flash ? req.flash('success') : null
+    });
+  } catch (error) {
+    console.error('Error loading employee dashboard:', error);
+    if (req.flash) req.flash('error', 'Error loading employee dashboard: ' + error.message);
+    res.redirect('/');
+  }
+});
+
+// Add these required dependencies at the top of auth-routes.js
+const XLSX = require('xlsx');
+const path = require('path');
+const fs = require('fs').promises;
+
+// Add this helper function
+async function fileExists(filePath) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Add this helper function
+function createDummyActivityLog(keywords, publications, employeeId) {
+  const log = [];
+  
+  // Add keyword creation log entries
+  keywords.forEach(keyword => {
+    if (keyword.CreatedBy === employeeId) {
+      log.push({
+        type: 'info',
+        timestamp: keyword.CreatedAt || new Date().toISOString(),
+        message: `Created keyword: "${keyword[config.app.keywordColumn]}"`
+      });
+    }
+  });
+  
+  // Add publication log entries
+  publications.forEach(pub => {
+    log.push({
+      type: 'success',
+      timestamp: pub['Publication Date'] || new Date().toISOString(),
+      message: `Published article for: "${pub[config.app.keywordColumn]}"`
+    });
+  });
+  
+  // Sort by timestamp (newest first)
+  return log.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+}
